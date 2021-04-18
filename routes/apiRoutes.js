@@ -54,7 +54,6 @@ router.post("/charge", async (req, res) => {
   }
 })
 
-/******** The following codes handle service related requests *********/
 router.post("/service", async (req, res) => {
   console.log(req.body)
   const product = new Service({
@@ -137,77 +136,22 @@ router.post("/review", async (req, res) => {
     res.status(400).json({error: err.message});
   }
 });
-/*router.get("/products/all", async (req, res) => {
-  try {
-  const products = await Product.find(); 
-  res.json(products);
-  } catch(error) {
-    res.status(400).json({error: err.message});
-  }
-});
 
-router.get("/products/:id", async (req, res) => {
-  try {
-  const product = await Product.findById(req.params.id); 
-  res.json(product);
-  } catch(error) {
-    res.status(400).json({error: err.message});
-  }
-});
-
-router.delete("/products/:id", async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id); 
-    const result = await product.remove();
-    res.json(result);
-  } catch(err) {
-    res.send("Error " + err);
-  } 
-});*/
-
-
-/******** The following codes handle order related requests *********/
-/*router.post("/orders", async (req, res) => {
-  console.log(req.body)
-  const order = new Order({
-    name: req.body.name,
-    price: req.body.price,
-    artistName: req.body.artistName,
-    imageURL: req.body.imageURL,
-    uid: req.body.uid,
-    date: new Date(req.body.date),
-    email: req.body.email
+router.post("/admin", async (req, res) => {
+  const admin = new Admin({
+    ...req.body
   });
   
   try {
-    const result = await order.save();
+    const result = await admin.save();
     res.json(result);
-  } catch(err) {
-    console.log(err.message)
-    res.status(400).json({error: err.message});
-  }
-});
-
-router.get("/orders/:uid", async (req, res) => {
-  try {
-    const orders = await Order.find({uid: req.params.uid}); 
-    console.log('uid is ', req.params.uid)
-    res.json(orders);
   } catch(error) {
-    res.status(400).json({error: err.message});
+    if (error.code == 11000) {
+      res.status(400).json({error: 'An admin with same email address already exists'});
+    } else {
+      res.status(400).json({error: 'Something wrong happened'});
+    }
   }
-});*/
-
-/*router.patch("/:id", async (req, res) => {
-  try {
-    const alien = await Alien.findById(req.params.id); 
-    alien.sub = req.body.sub;
-    const a1 = await alien.save();
-    res.json(a1);
-  } catch(err) {
-    res.send("Error " + err);
-  } 
 });
-*/
 
 module.exports = router;
