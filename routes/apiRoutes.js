@@ -5,7 +5,7 @@ const Order = require("../models/Order");
 const Admin = require("../models/Admin");
 const Stripe = require("stripe");
 
-const stripe = new Stripe("sk_test_51Ie2CCBegGKHxRdA4RNQ08MvIA721JCKof9CAXSpHvHyxdqUoxigA3LkI9ROs74DWBcrwb2mgLsh6QqIDci0409a002oKX0Mwk");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 router.post("/charge", async (req, res) => {
   const {
