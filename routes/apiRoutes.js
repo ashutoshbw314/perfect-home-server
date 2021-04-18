@@ -3,6 +3,7 @@ const router = express.Router();
 const Service = require("../models/Service");
 const Order = require("../models/Order");
 const Admin = require("../models/Admin");
+const Review = require("../models/Review");
 const Stripe = require("stripe");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -91,6 +92,17 @@ router.get("/3-services", async (req, res) => {
   }
 });
 
+router.get("/3-random-reviews", async (req, res) => {
+  try {
+    const reviews = await Review.aggregate([
+      {$sample: {size: 3}},
+    ]); 
+    res.json(reviews);
+  } catch(err) {
+    res.status(400).json({error: err.message});
+  }
+});
+
 router.get("/orders", async (req, res) => {
   try {
     const orders = await Order.find(req.query.email ? {email: req.query.email} : {}).sort({date: -1}); 
@@ -111,6 +123,20 @@ router.put("/orders/:id", async (req, res) => {
   } 
 });
 
+router.post("/review", async (req, res) => {
+  console.log(req.body)
+  const review = new Review({
+    ...req.body
+  });
+  
+  try {
+    const result = await review.save();
+    res.json(result);
+  } catch(err) {
+    console.log(err.message)
+    res.status(400).json({error: err.message});
+  }
+});
 /*router.get("/products/all", async (req, res) => {
   try {
   const products = await Product.find(); 
