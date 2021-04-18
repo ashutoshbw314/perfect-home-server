@@ -1,23 +1,11 @@
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
-  name: {
+  payment_id: {
     type: String,
     required: true,
   },
-  artistName: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  imageURL: {
-    type: String,
-    required: true,
-  },
-  uid: {
+  username: {
     type: String,
     required: true,
   },
@@ -25,15 +13,36 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  service_id: {
+    type: String,
+    required: true,
+  },
+  serviceAmount: {
+    type: Number,
+    required: true,
+  },
+  serviceTitle: {
+    type: String,
+    required: true,
+  },
+  serviceDescription: {
+    type: String,
+    required: true,
+  },
+  serviceImageURL: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    required: true,
+  },
   date: {
     type: Date,
-    required: true,
+    default: Date.now,
   }
-
 });
 
 const Order = mongoose.model("order", orderSchema);
 
 module.exports = Order; 
-
-

@@ -1,29 +1,52 @@
 const express = require("express");
 const router = express.Router();
 const Service = require("../models/Service");
+const Order = require("../models/Order");
 const Admin = require("../models/Admin");
 const Stripe = require("stripe");
 
 const stripe = new Stripe("sk_test_51Ie2CCBegGKHxRdA4RNQ08MvIA721JCKof9CAXSpHvHyxdqUoxigA3LkI9ROs74DWBcrwb2mgLsh6QqIDci0409a002oKX0Mwk");
 
 router.post("/charge", async (req, res) => {
-  const {id, amount} = req.body;
+  const {
+    payment_id, 
+    username,
+    email,
+    service_id,
+    serviceAmount,
+    serviceTitle,
+    serviceDescription,
+    serviceImageURL,
+  } = req.body;
+  const order = new Order({
+    payment_id, 
+    username,
+    email,
+    service_id,
+    serviceAmount,
+    serviceTitle,
+    serviceDescription,
+    serviceImageURL,
+    status: 'pending'
+  });
 
   try {
     const payment = await stripe.paymentIntents.create({
-      amount,
+      amount: serviceAmount,
       currency: "USD",
-      description: "Home cleaning",
-      payment_method: id,
+      description: serviceDescription,
+      payment_method: payment_id,
       confirm: true
     });
 
-    console.log(payment);
+    const result = await order.save();
 
     res.status(200).json({
-      confirm: "abc123"
+      paymentMessage: "Order placed successfully!",
+      mongoMessage: result,
     })
   } catch(error) {
+    console.log(error);
     res.status(400).json({
       message: error.message
     })
@@ -67,6 +90,27 @@ router.get("/3-services", async (req, res) => {
     res.status(400).json({error: err.message});
   }
 });
+
+router.get("/orders", async (req, res) => {
+  try {
+    const orders = await Order.find(req.query.email ? {email: req.query.email} : {}).sort({date: -1}); 
+    res.json(orders);
+  } catch(error) {
+    res.status(400).json({error: err.message});
+  }
+});
+
+router.put("/orders/:id", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id); 
+    order.status = req.query.status;
+    const result = await order.save();
+    res.json(result);
+  } catch(error) {
+    res.status(400).send({message: error.message});
+  } 
+});
+
 /*router.get("/products/all", async (req, res) => {
   try {
   const products = await Product.find(); 
