@@ -111,6 +111,26 @@ router.get("/orders", async (req, res) => {
   }
 });
 
+router.get("/services", async (req, res) => {
+  try {
+    const services = await Service.find(); 
+    res.json(services);
+  } catch(error) {
+    res.status(400).json({error: err.message});
+  }
+});
+
+router.delete("/services/:id", async (req, res) => {
+  try {
+    const service = await Service.findById(req.params.id); 
+    const result = await service.remove();
+    res.json(result);
+  } catch(error) {
+    console.log(error.message)
+    res.status(400).json({error: error.message});
+  }
+});
+
 router.put("/orders/:id", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id); 
